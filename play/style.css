@@ -1,0 +1,108 @@
+/* 앱 단어 게임 팔레트 (components/survivalGate/wordGameKit.tsx) */
+@font-face { font-family: 'Pretendard'; font-weight: 600; src: url('assets/fonts/Pretendard-SemiBold.ttf') format('truetype'); font-display: swap; }
+@font-face { font-family: 'Pretendard'; font-weight: 700; src: url('assets/fonts/Pretendard-Bold.ttf') format('truetype'); font-display: swap; }
+:root {
+  --gold: #F5C451; --gold-soft: #FFE3A1; --jade: #3FBF8F; --bg: #07090B;
+  --t-face1: #F6FCF9; --t-face2: #DDF0E5; --t-face3: #BCDFCB; --t-side: #3F9676; --t-side2: #123F2F; --t-rim: #0A2A1F; --t-text: #0B3B2E;
+  --n-face1: #FFFCF3; --n-face2: #F3E5C8; --n-face3: #DCC393; --n-side: #B58445; --n-side2: #4F3510; --n-rim: #2E1E07; --n-text: #3F2E0E;
+  --text: #F4EFE3; --muted: rgba(244,239,227,0.62);
+}
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body { margin: 0; height: 100%; background: var(--bg); color: var(--text); overflow-x: hidden; }
+body {
+  font-family: 'Pretendard', system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans', sans-serif; font-weight: 600;
+  background: linear-gradient(180deg, rgba(7,9,11,0.55), rgba(7,9,11,0.82)), url('assets/bg.jpg') center / cover fixed, var(--bg);
+}
+#app { min-height: 100dvh; max-width: 560px; margin: 0 auto; padding: 0 16px env(safe-area-inset-bottom); display: flex; flex-direction: column; }
+button { font: inherit; color: inherit; border: 0; background: none; cursor: pointer; }
+
+.btn { display: inline-flex; align-items: center; justify-content: center; min-height: 46px; padding: 0 18px; border-radius: 14px; font-weight: 700; font-size: 16px; text-decoration: none; }
+.btn-gold { background: var(--gold); color: #0A0A0A; }
+.btn-jade { background: var(--jade); color: #04130D; }
+.btn-ghost { border: 1px solid rgba(245,196,81,0.45); color: var(--gold-soft); }
+.btn-tool { min-height: 38px; font-size: 14px; border: 1px solid rgba(245,196,81,0.45); color: var(--gold-soft); border-radius: 12px; padding: 0 14px; }
+.btn-tool:disabled { opacity: 0.35; }
+.btn-cta { width: 100%; margin-top: 12px; }
+.icon-btn { width: 40px; height: 40px; font-size: 30px; line-height: 1; color: var(--gold-soft); }
+.free-line { color: var(--muted); font-size: 12.5px; text-align: center; margin: 10px 0 4px; line-height: 1.45; }
+
+/* 고르기 화면 */
+.picker { padding: 28px 0 24px; display: flex; flex-direction: column; gap: 12px; }
+.picker-title { font-size: 26px; margin: 4px 0 0; color: var(--gold-soft); }
+.picker-sub { margin: 0 0 6px; color: var(--muted); font-size: 14px; }
+.pick-card { text-align: start; padding: 16px; border-radius: 18px; background: rgba(20,14,8,0.72); border: 1px solid rgba(245,196,81,0.35); display: flex; flex-direction: column; gap: 6px; }
+.pick-name { font-size: 19px; font-weight: 700; color: var(--gold); }
+.pick-how { font-size: 13.5px; color: var(--text); opacity: 0.85; line-height: 1.4; }
+.pick-best { font-size: 12.5px; color: var(--jade); }
+
+/* 게임 틀 */
+.game { flex: 1; display: flex; flex-direction: column; min-height: 100dvh; padding-bottom: 10px; }
+.topbar { display: flex; align-items: center; gap: 6px; padding-top: 10px; }
+.top-title { display: flex; flex-direction: column; }
+.top-game { font-size: 17px; font-weight: 700; color: var(--gold-soft); }
+.top-stage { font-size: 12.5px; color: var(--muted); }
+.stats { display: flex; gap: 10px; justify-content: center; margin: 6px 0; }
+.stat { display: flex; gap: 6px; align-items: baseline; padding: 4px 10px; border-radius: 999px; background: rgba(0,0,0,0.35); }
+.stat-k { font-size: 12px; color: var(--muted); }
+.stat-v { font-size: 15px; font-variant-numeric: tabular-nums; }
+.how { font-size: 13px; color: var(--text); background: rgba(0,0,0,0.42); border-radius: 12px; padding: 8px 12px; margin: 2px 0 8px; line-height: 1.4; transition: opacity .3s; max-height: 80px; overflow: hidden; }
+.how-challenge { border: 1px solid var(--jade); color: #D8FFF0; }
+/* 첫 탭 뒤 설명은 흐리게만 — 높이를 접으면 판이 위로 튀어 두 번째 탭이 엉뚱한 칸에 맞는다 (10-12 마케팅 실사용) */
+.how-done:not(.how-challenge) { opacity: 0; visibility: hidden; }
+.board { position: relative; flex: 1; min-height: 300px; display: flex; align-items: center; justify-content: center; }
+.tools { display: flex; gap: 10px; justify-content: center; padding: 8px 0 4px; }
+.combo { position: absolute; top: 4px; inset-inline-end: 4px; font-size: 26px; font-weight: 700; color: var(--gold); opacity: 0; pointer-events: none; }
+.combo.pop { animation: pop .9s ease-out; }
+@keyframes pop { 0% { opacity: 0; transform: scale(.6); } 20% { opacity: 1; transform: scale(1.15); } 100% { opacity: 0; transform: scale(1); } }
+
+/* 패 — 앱 3D 패: 면 그라데이션 + 오른쪽·아래 옆면 */
+.tile { position: absolute; width: var(--tw); height: var(--th); border-radius: max(6px, calc(var(--tw) * 0.13)); font-size: var(--fs); font-weight: 700; line-height: 1.15; padding: 4px; display: flex; align-items: center; justify-content: center; text-align: center; word-break: keep-all; overflow-wrap: anywhere; transition: transform .12s, opacity .25s, filter .2s; }
+.tile-target { color: var(--t-text); background: linear-gradient(160deg, var(--t-face1), var(--t-face2) 55%, var(--t-face3)); border: 1.5px solid var(--t-rim); box-shadow: calc(var(--tw) * 0.11) calc(var(--tw) * 0.17) 0 -1px var(--t-side2), 2px 3px 0 0 var(--t-side); }
+.tile-native { color: var(--n-text); background: linear-gradient(160deg, var(--n-face1), var(--n-face2) 55%, var(--n-face3)); border: 1.5px solid var(--n-rim); box-shadow: calc(var(--tw) * 0.11) calc(var(--tw) * 0.17) 0 -1px var(--n-side2), 2px 3px 0 0 var(--n-side); }
+.tile.sel { transform: translate(-2px, -4px); outline: 3px solid var(--gold); outline-offset: 1px; }
+.tile.hint { animation: glow 0.6s ease-in-out 4; }
+@keyframes glow { 50% { outline: 3px solid var(--jade); outline-offset: 2px; filter: brightness(1.15); } }
+.tile.gone { opacity: 0; pointer-events: none; transform: scale(.7); }
+.tile.mj.covered { filter: brightness(0.55); }
+.tile.mj.blocked { filter: brightness(0.82); }
+.sh-field, .mj-field { position: relative; }
+.sh-path { position: absolute; inset: 0; pointer-events: none; z-index: 5; overflow: visible; }
+.sh-path polyline { fill: none; stroke: var(--gold); stroke-width: 4; stroke-linejoin: round; stroke-linecap: round; filter: drop-shadow(0 0 6px rgba(245,196,81,.8)); }
+
+/* 카드 뒤집기 — 뒷면은 옻칠 붉은색 + 금 테두리 + 금 마름모 (WordMemoryGame) */
+.mem-grid { display: grid; gap: 10px; justify-content: center; grid-auto-rows: auto; }
+.mcard { width: var(--cw); height: calc(var(--cw) * 1.25); perspective: 700px; padding: 0; }
+.mcard-inner { position: relative; width: 100%; height: 100%; transform-style: preserve-3d; transition: transform 220ms ease; }
+.mcard.open .mcard-inner, .mcard.matched .mcard-inner { transform: rotateY(180deg); }
+.mcard-back, .mcard-face { position: absolute; inset: 0; border-radius: max(8px, calc(var(--cw) * 0.12)); backface-visibility: hidden; -webkit-backface-visibility: hidden; display: flex; align-items: center; justify-content: center; }
+.mcard-back { background: linear-gradient(160deg, #4A1A1F, #240B0F 60%, #14060A); box-shadow: inset 0 0 0 3px rgba(245,196,81,0.55), 0 4px 10px rgba(0,0,0,.45); }
+.mcard-diamond { width: 22%; aspect-ratio: 1; transform: rotate(45deg); border: 2px solid rgba(245,196,81,0.85); }
+.mcard-face { transform: rotateY(180deg); padding: 6px; text-align: center; font-weight: 700; font-size: clamp(12px, calc(var(--cw) * 0.17), 20px); word-break: keep-all; overflow-wrap: anywhere; }
+.mcard-face.face-target { color: var(--t-text); background: linear-gradient(160deg, var(--t-face1), var(--t-face3)); border: 2px solid var(--t-rim); }
+.mcard-face.face-native { color: var(--n-text); background: linear-gradient(160deg, var(--n-face1), var(--n-face3)); border: 2px solid var(--n-rim); }
+.mcard.matched { opacity: 0.55; pointer-events: none; }
+
+/* 끝 화면 */
+.end-layer { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; padding: 16px; z-index: 50; }
+.end-card { width: 100%; max-width: 420px; max-height: 92dvh; overflow-y: auto; background: #120D08; border: 1px solid rgba(245,196,81,0.5); border-radius: 22px; padding: 20px 18px 14px; text-align: center; }
+.end-title { margin: 0 0 6px; color: var(--gold); font-size: 26px; }
+.end-result { font-size: 18px; margin-bottom: 4px; }
+.end-best { font-size: 13px; color: var(--muted); }
+.end-best.new { color: var(--jade); font-weight: 700; }
+.versus { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 12px 0 2px; }
+.vs-col { background: rgba(255,255,255,0.05); border-radius: 12px; padding: 8px; display: flex; flex-direction: column; gap: 2px; }
+.vs-k { font-size: 12px; color: var(--muted); }
+.vs-v { font-size: 14px; }
+.vs-verdict { grid-column: 1 / -1; color: var(--gold-soft); font-weight: 700; }
+.end-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 14px; }
+.end-actions .btn-gold, .end-actions .btn-jade { grid-column: 1 / -1; }
+.more-in-app { color: var(--gold-soft); margin: 12px 0 0; font-size: 14px; }
+
+.toast { position: fixed; left: 50%; bottom: 28px; transform: translate(-50%, 20px); background: rgba(0,0,0,0.82); color: #fff; padding: 10px 16px; border-radius: 12px; font-size: 14px; opacity: 0; transition: opacity .25s, transform .25s; z-index: 60; }
+.toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+/* 긴 낱말은 글자를 줄여 한 줄·두 줄 안에 (pekerjaan 이 중간에서 끊기지 않게) */
+.tile.len-m { font-size: calc(var(--fs) * 0.82); }
+.tile.len-l { font-size: calc(var(--fs) * 0.68); letter-spacing: -0.02em; }
+.tile { overflow-wrap: normal; word-break: keep-all; hyphens: auto; }
+.mcard-text.len-l { font-size: 0.8em; }
